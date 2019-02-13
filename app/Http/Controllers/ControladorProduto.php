@@ -36,7 +36,7 @@ class ControladorProduto extends Controller
      */
     public function store(Request $request)
     {
-        $cat = Produto();
+        $cat = new Produto();
         $cat->nome = $request->input('nomeProduto');
         $cat->estoque = $request->input('nomeProduto');
         $cat->preco = $request->input('nomeProduto');
