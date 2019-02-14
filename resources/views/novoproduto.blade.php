@@ -16,7 +16,7 @@
                 <label for="nomeProduto">Selecione a Categoria do Produto</label>
                 <select class="form-control" id="cat" name="categoriaProduto">
                     <option selected>Selecione...</option>
-                    <option value="1">{{ $cat }}</option>
+                    <option value="1"></option>
                 </select>
 			</div>
 			<button type="submit" class="btn btn-primary btn-sm">Salvar</button>
