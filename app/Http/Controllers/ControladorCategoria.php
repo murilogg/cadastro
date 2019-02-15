@@ -8,11 +8,13 @@ use App\Categoria;
 
 class ControladorCategoria extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function indexJson()
+    {
+        $cats = Categoria::all();
+        //return json_encode($cats);  // OUTRA FORMA DE FAZER API/CATEGORIAS
+        return $cats->toJson();
+    }
+
     public function index()
     {
         $cats = Categoria::all();
@@ -101,9 +103,5 @@ class ControladorCategoria extends Controller
         return redirect('/categorias');
     }
 
-    public function indexJson()
-    {
-        $cats = Categoria::all();
-        return json_encode($cats);
-    }
+    
 }

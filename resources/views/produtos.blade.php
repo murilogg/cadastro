@@ -6,7 +6,7 @@
 	<div class="card-body">
 		<h5 class="card-title">Cadastro de Produtos</h5>
 
-		<table class="table table-ordered table-hover">
+		<table class="table table-ordered table-hover" id="tabelaProdutos">
 			<thead>
 				<tr>
 					<th>Código</th>
@@ -28,8 +28,8 @@
 	</div>
 </div>
 
-<div class="modal bd-example-modal-sm" tabindex="-1" role="dialog" id="dlgProdutos" aria-labelledby="mySmallModalLabel">
-  <div class="modal-dialog modal-lg">
+<div class="modal" tabindex="-1" role="dialog" id="dlgProdutos">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <form class="form-horizontal" id="formProduto">
 				<div class="modal-header">
@@ -71,7 +71,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-primary">Salvar</button>
-					<button type="cancel" class="btn btn-secondary" data-dissmiss="modal">Cancelar</button>
+					<button type="cancel" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
 				</div>
 			</form>
     </div>
@@ -82,6 +82,15 @@
 
 @section('javascript')
 <script type="text/javascript">
+
+	$.ajaxSetup({
+		headers: {
+			//'X-CSRF-TOKEN': "{{ csrf_token() }}"
+			'X-CSRF-Token': $('meta[name=csrf_token]').attr('content')
+		}
+	});
+
+
 	function novoProduto() {
 		$('#id').val('');
 		$('#nomeProduto').val('');
@@ -98,11 +107,56 @@
     		}
 
     	});
-
     }
+
+    function montarLinha(p){
+    	var linha = "<tr>" + 
+    		"<td>" + p.id + "</td>" +
+    		"<td>" + p.nome + "</td>" +
+	    	"<td>" + p.estoque + "</td>" +
+    		"<td>" + p.preco + "</td>" +
+    		"<td>" + p.categoria_id + "</td>" +
+    		"<td>" +
+    		    ' <button class="btn btn-sm btn-primary">Editar</button> ' +
+    	    	' <button class="btn btn-sm btn-danger">Apagar</button> ' +
+  		   	"</td>" +
+    		"</tr>";
+    	return linha;
+    }
+
+
+    function carregarProdutos(){
+    	$.getJSON('/api/produtos',function(produtos){
+    		for(i=0;i<produtos.length;i++){
+    			linha = montarLinha(produtos[i]);
+    			$('#tabelaProdutos>tbody').append(linha);
+    		}
+    	});
+    }
+
+    function criarProduto(){
+    	prod = {
+    		nome: $("#nomeProduto").val(),
+    		preco: $("#precoProduto").val(),
+    		estoque: $("#quantidadeProduto").val(),
+    		categoria_id: $("#categoriaProduto").val()
+    	};
+    	$.post("/api/produtos", prod, function(data){
+    		produto = JSON.parse(data);
+    		linha = montarLinha(produto);
+    		$('#tabelaProdutos>tbody').append(linha);
+    	});
+    }
+
+    $("#formProduto").submit( function(event){
+    	event.preventDefault();
+    	criarProduto();
+    	$("#dlgProdutos").modal('hide');
+    });
 
     $(function(){
     	carregarCategorias();
+    	carregarProdutos();
     });
 
 </script>

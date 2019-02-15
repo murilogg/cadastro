@@ -8,12 +8,14 @@ use App\Produto;
 
 class ControladorProduto extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
+    {
+        $produtos = Produto::all();
+        return $produtos->toJson();
+    }
+    
+    public function indexView()
     {
         return view('produtos');
     }
@@ -37,12 +39,13 @@ class ControladorProduto extends Controller
     public function store(Request $request)
     {
         $cat = new Produto();
-        $cat->nome = $request->input('nomeProduto');
-        $cat->estoque = $request->input('nomeProduto');
-        $cat->preco = $request->input('nomeProduto');
-        $cat->categoria_id = $request->input('nomeProduto');
+        $cat->nome = $request->input('nome');
+        $cat->estoque = $request->input('estoque');
+        $cat->preco = $request->input('preco');
+        $cat->categoria_id = $request->input('categoria_id');
         $cat->save();
-        return redirect('/produtos');
+        //return json_decode($cat);
+        return response()->json($cat, 201);
     }
 
     /**
