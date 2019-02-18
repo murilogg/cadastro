@@ -85,8 +85,7 @@
 
 	$.ajaxSetup({
 		headers: {
-			//'X-CSRF-TOKEN': "{{ csrf_token() }}"
-			'X-CSRF-Token': $('meta[name=csrf_token]').attr('content')
+			'X-CSRF-TOKEN': "{{ csrf_token() }}"
 		}
 	});
 
@@ -117,13 +116,43 @@
     		"<td>" + p.preco + "</td>" +
     		"<td>" + p.categoria_id + "</td>" +
     		"<td>" +
-    		    ' <button class="btn btn-sm btn-primary">Editar</button> ' +
-    	    	' <button class="btn btn-sm btn-danger">Apagar</button> ' +
+    		    ' <button class="btn btn-sm btn-primary" onclick="editar('+ p.id +')">Editar</button> ' +
+    	    	' <button class="btn btn-sm btn-danger" onclick="remover('+ p.id +')">Apagar</button> ' +
   		   	"</td>" +
     		"</tr>";
     	return linha;
     }
 
+    function editar(id){
+    	$.getJSON('/api/produtos/'+id, function(data){
+    		console.log(data);
+    		$('#id').val(data.id);
+			$('#nomeProduto').val(data.nome);
+			$('#quantidadeProduto').val(data.estoque);
+			$('#precoProduto').val(data.preco);
+			$('#categoriaProduto').val(data.categoria_id);
+			$('#dlgProdutos').modal('show');
+    	});
+    }
+
+    function remover(id){
+    	$.ajax({
+    		type: "DELETE",
+    		url: "api/produtos/" + id,
+    		context: this,
+    		success: function(){
+    			linhas = $("#tabelaProdutos>tbody>tr");
+    			e = linhas.filter( function(i, elemento) {
+    				return elemento.cells[0].textContent == id;
+    			});
+    			if(e)
+    				e.remove();
+    		},
+    		error: function(error){
+    			console.log(error);
+    		}
+    	});
+    }
 
     function carregarProdutos(){
     	$.getJSON('/api/produtos',function(produtos){
@@ -148,9 +177,36 @@
     	});
     }
 
+    function salvarProduto(){
+    	prod = {
+    		id: $("#id").val(),
+    		nome: $("#nomeProduto").val(),
+    		preco: $("#precoProduto").val(),
+    		estoque: $("#quantidadeProduto").val(),
+    		categoria_id: $("#categoriaProduto").val()
+    	};
+    	$.ajax({
+    		type: "PUT",
+    		url: "api/produtos/" + prod.id,
+    		context: this,
+    		data: prod,
+    		success: function(data){
+    			console.log('Salvou Ok');
+    		},
+    		error: function(error){
+    			console.log(error);
+    		}
+    	});
+
+    }
+
     $("#formProduto").submit( function(event){
     	event.preventDefault();
-    	criarProduto();
+    	if ($("#id").val() != '')
+         	salvarProduto();
+         else
+            criarProduto(); 
+
     	$("#dlgProdutos").modal('hide');
     });
 

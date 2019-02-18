@@ -17,10 +17,6 @@ Route::get('/', function () {
 
 Route::get('/produtos','ControladorProduto@indexView');
 
-Route::get('/produtos/novo','ControladorProduto@create');
-Route::post('/produtos','ControladorProduto@store');
-
-
 Route::get('/categorias','ControladorCategoria@index');
 
 Route::get('/categorias/novo','ControladorCategoria@create');
